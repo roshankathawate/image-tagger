@@ -3,14 +3,18 @@ import { object, string, number, array } from "yup";
 const payload = {
   body: object({
     url: string().required("Image url is required"),
-    tag: array().of(string()).required("Image tag is required"),
+    tags: array().of(string().min(1)).required("Tags are required"),
     description: string().min(10),
     height: number().positive().integer(),
     width: number().positive().integer(),
     type: string(),
-    body: string()
-      .required("Body is required")
   }),
+};
+
+const addTagsPayload = {
+    body: object({
+        tags: array().of(string()).required("Image tags are required"),
+      }),
 };
 
 const params = {
@@ -19,7 +23,7 @@ const params = {
   }),
 };
 
-export const createImageTagSchema = object({
+export const createImageSchema = object({
   ...payload,
 });
 
@@ -31,3 +35,8 @@ export const updateImageSchema = object({
 export const deleteImageSchema = object({
   ...params,
 });
+
+export const addTagsToImageSchema = object({
+    ...params,
+    ...addTagsPayload,
+  });

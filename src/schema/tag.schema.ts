@@ -3,8 +3,6 @@ import { object, string, number, array } from "yup";
 const payload = {
   body: object({
     tag: string().required("tag is required"),
-    body: string()
-      .required("Body is required")
   }),
 };
 

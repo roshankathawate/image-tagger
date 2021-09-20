@@ -1,30 +1,43 @@
 import { Request, Response } from "express";
 import {get} from "lodash";
+import logger from "../logger";
+import Tag from "../model/tag.model";
 
-export async function creareImageTagHandler(req: Request, res:Response){
-    const {image } = req.body;
+import { addTagToImage, createImage, deleteImage, findImage } from "../service/image.service";
+
+export async function createImageHandler(req: Request, res:Response){
+    const image  = req.body;
     const newImage = await createImage({...image});
-
     return res.send(newImage);
 }
 
-export async function createTagHandler(req: Request, res: Response){
-    const { tag } = req.body;
-    const newTag = await createTag({...tag});
+export async function getImageHandler(req: Request, res:Response){
+    const imageId = get(req, "params.imageId");
+    const imageData = await findImage({ imageId });
 
-    return res.send(newTag);
+    if (!imageData) {
+        return res.sendStatus(404);
+    }
 
+    return res.send(imageData);
 }
 
-export async function getImageHandler(req: Request, res:Response){
-    // const imageId = get(req, "params.imageId");
-    // const imageData = await findImage({ imageId });
+export async function addTagsToImageHandler(req: Request, res: Response){
+    const imageId = get(req, "params.imageId");
+    const tag = req.body;
+    logger.info(tag);
+    const updatedImage = await addTagToImage(imageId, tag);
+    return res.send(updatedImage);
+}
 
-    // if (!imageData) {
-    //     return res.sendStatus(404);
-    // }
+export async function getImageTagsHandler(req: Request, res:Response){
+    const imageId = get(req, "params.imageId");
+    const imageData = await findImage({ imageId });
 
-    return res.send("getImageHandler");
+    if (!imageData) {
+        return res.sendStatus(404);
+    }
+    return res.send(imageData.tags);
 }
 
 export async function getAllImagesHandler(req: Request, res:Response){
@@ -40,9 +53,17 @@ export async function getAllImagesHandler(req: Request, res:Response){
 
 export async function updateImageHandler(req: Request, res:Response){}
 
-export async function deleteImageHandler(req: Request, res:Response){}
+export async function deleteImageHandler(req: Request, res:Response){
+    const imageId = get(req, "params.imageId");
+    const image = await findImage({ imageId });
 
-export async function deleteTagsHandler(req: Request, res:Response){}
+    if (!image) {
+        return res.sendStatus(404);
+    }
+    await deleteImage(image);
+    return res.sendStatus(200);
+    
+}
 
-export async function getTagHandler(req: Request, res:Response){}
+
 

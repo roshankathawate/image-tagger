@@ -3,6 +3,7 @@ import { object, string, number, array } from "yup";
 const payload = {
   body: object({
     tag: string().required("tag is required"),
+    images:array().of(string()),
   }),
 };
 

@@ -33,14 +33,12 @@ import {
   }
 
   export async function findAllImages(query:FilterQuery<ImageDocument>){
-       const options = {
+      const options = {
       sort: { date: 1 },
       lean: true
       
     };
-    if(query.createdAt){
-      query.createdAt = new Date(query.createdAt);
-    }
+    
     const response =  await Image.paginate(query, options);
     return {images: response.docs, hasNextPage: response.hasNextPage, hasPrevPage:response.hasPrevPage, meta:response.meta, 
       nextPage: response.nextPage, prevPage: response.prevPage, pageCounter: response.pagingCounter,

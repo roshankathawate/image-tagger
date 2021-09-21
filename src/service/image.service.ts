@@ -5,8 +5,10 @@ import {
     QueryOptions,
   } from "mongoose";
 
+  import moment from "moment";
   import Image, { ImageDocument } from "../model/image.model";
   import Tag from "../model/tag.model";
+
 
   
   export async function createImage(input: DocumentDefinition<ImageDocument>) {
@@ -36,6 +38,9 @@ import {
       lean: true
       
     };
+    if(query.createdAt){
+      query.createdAt = new Date(query.createdAt);
+    }
     const response =  await Image.paginate(query, options);
     return {images: response.docs, hasNextPage: response.hasNextPage, hasPrevPage:response.hasPrevPage, meta:response.meta, 
       nextPage: response.nextPage, prevPage: response.prevPage, pageCounter: response.pagingCounter,

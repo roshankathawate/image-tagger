@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {get} from "lodash";
+import moment from "moment";
 import logger from "../logger";
 import Tag from "../model/tag.model";
 
@@ -35,6 +36,7 @@ export async function getImageTagsHandler(req: Request, res:Response){
 }
 
 export async function getAllImagesHandler(req: Request, res:Response){
+    // TODO: Support date based searching.
     const imageData = await findAllImages(req.query);
     
     if (!imageData) {

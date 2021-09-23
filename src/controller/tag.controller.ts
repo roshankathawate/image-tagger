@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { createTag, findTag} from "../service/tag.service";
+import { createTag, findAllTags, findTag, deleteTag} from "../service/tag.service";
 import {get} from "lodash";
 
 export async function createTagHandler(req: Request, res: Response){
@@ -9,6 +9,16 @@ export async function createTagHandler(req: Request, res: Response){
     return res.send(newTag);
 }
 
+export async function getAllTagsHandler(req: Request, res:Response){
+    const tagData = await findAllTags(req.query);
+    
+    if (!tagData) {
+        return res.sendStatus(404);
+    }
+
+    return res.send(tagData);
+
+}
 
 export async function getTagHandler(req: Request, res:Response){
     const tagId = get(req, "params.tagId");
@@ -23,28 +33,15 @@ export async function getTagHandler(req: Request, res:Response){
 
 
 
-export async function deleteTagsHandler(req: Request, res:Response){}
+export async function deleteTagHandler(req: Request, res:Response){
+    const tagId = get(req, "params.tagId");
+    const tag = await findTag({ tagId: tagId });
 
-// export async function updateTagHandler(req: Request, res:Response){
-//     const imageId = get(req, "params.imageId");
-//     const { image } = req.body;
-//     const newTags = image.tags || [];
-//     const oldImage = await findImage({ imageId });
-//     if(!oldImage){
-//         return res.sendStatus(404);
-//     }
-//     const oldTags = oldImage.tags;
-
-//     Object.assign(oldTags, image);
-//     const newImage = await oldImage.save();
-
-//     const added = difference(newTags, oldTags);
-//     const removed = difference(oldTags, newTags);
-//     await Tag.updateMany({ '_id': added }, { $addToSet: { products: oldImage._id } });
-//     await Tag.updateMany({ '_id': removed }, { $pull: { products: oldImage._id } });
-
-//     return res.send(newImage);
-
-// }
-
-// export async function getTagHandler(req: Request, res:Response){}
+    if (!tag) {
+        return res.sendStatus(404);
+    }
+    const images = tag.images;
+    await deleteTag({tagId});
+    return res.sendStatus(200);
+    
+}

@@ -3,12 +3,14 @@ import { Express, Request, Response } from "express";
 import { deleteImageHandler, createImageHandler, updateImageHandler, getImageHandler, getAllImagesHandler, getImageTagsHandler } from "./controller/image.controller";
 import { deleteTagHandler, getAllTagsHandler, getTagHandler, createTagHandler } from "./controller/tag.controller";
 import { validateRequest } from "./middleware";
+import checkJwt from "./middleware/checkJwt";
 import { createImageSchema, updateImageSchema, deleteImageSchema } from "./schema/image.schema";
 import { createTagSchema, deleteTagSchema } from "./schema/tag.schema";
 
 export default function (app: Express) {
 
     // save image data
+    
     app.post(
         "/api/v1/images",
         [validateRequest(createImageSchema)],

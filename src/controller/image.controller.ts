@@ -1,5 +1,6 @@
-import { Request, Response } from "express";
+import { query, Request, Response } from "express";
 import { get } from "lodash";
+
 import Tag from "../model/tag.model";
 import { difference } from "../util/util";
 
@@ -36,7 +37,12 @@ export async function getImageTagsHandler(req: Request, res: Response) {
 
 export async function getAllImagesHandler(req: Request, res: Response) {
     // TODO: Support date based searching.
-    const imageData = await findAllImages(req.query);
+    let imageData;
+    if(req.query.date){
+        imageData = await findAllImages({createdDate:req.query.date});
+    }else{
+        imageData = await findAllImages(req.query);
+    }
 
     if (!imageData) {
         return res.sendStatus(404);

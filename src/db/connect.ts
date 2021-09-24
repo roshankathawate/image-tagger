@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import config from "config";
 import log from "../logger";
 
-function connect(){
+async function connect(){
     const uri = config.get("dbConnectionUri") as string;
 
     return mongoose

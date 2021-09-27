@@ -6,11 +6,9 @@ import {
 } from "mongoose";
 
 import Tag, { TagDocument } from "../model/tag.model";
-import Image from "../model/image.model";
 
 export async function createTag(input: DocumentDefinition<TagDocument>) {
   const newTag = await Tag.create(input);
-  await Image.updateMany({ '_id': newTag.images }, { $push: { tags: newTag._id } });
   return newTag;
 }
 

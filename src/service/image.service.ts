@@ -10,7 +10,6 @@ import Tag from "../model/tag.model";
 
 export async function createImage(input: DocumentDefinition<ImageDocument>) {
   const newImage = await Image.create(input);
-  await Tag.updateMany({ '_id': newImage.tags }, { $push: { images: newImage._id } });
   return newImage;
 }
 

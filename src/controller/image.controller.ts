@@ -5,6 +5,7 @@ import Tag from "../model/tag.model";
 import { difference } from "../util/util";
 
 import { createImage, deleteImage, findAllImages, findImage, findAndUpdate } from "../service/image.service";
+import moment from "moment";
 
 
 export async function createImageHandler(req: Request, res: Response) {
@@ -36,11 +37,27 @@ export async function getImageTagsHandler(req: Request, res: Response) {
 }
 
 export async function getAllImagesHandler(req: Request, res: Response) {
-    // TODO: Support date based searching.
     let imageData;
-    if(req.query.date){
-        imageData = await findAllImages({createdDate:req.query.date});
-    }else{
+    const startDate = get(req, "query.date");
+    const endDate = moment(startDate, "YYYY-MM-DD").add(1, "d").toDate();
+    // find images created or updated between startDate and endDate
+    if (moment(startDate, "YYYY-MM-DD", true).isValid()) {
+        imageData = await findAllImages({
+            $or: [
+                {
+                    updatedAt: {
+                        "$gte": startDate,
+                        "$lt": endDate
+                    },
+                    createdAt: {
+                        "$gte": startDate,
+                        "$lt": endDate
+                    }
+                }
+            ]
+
+        });
+    } else {
         imageData = await findAllImages(req.query);
     }
 

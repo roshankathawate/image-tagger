@@ -18,9 +18,9 @@ export default function (app: Express) {
     )
 
     // get all images
-    // TODO: implement pagination
     app.get(
         "/api/v1/images",
+        
         getAllImagesHandler
     )
 

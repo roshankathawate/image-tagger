@@ -1,26 +1,38 @@
-import { Express, Request, Response } from "express";
+import { Express } from "express";
 
+import { registerUserHandler, createUserSessionHandler, invalidateUserSessionHandler } from "./controller/user.controller";
 import { deleteImageHandler, createImageHandler, updateImageHandler, getImageHandler, getAllImagesHandler, getImageTagsHandler } from "./controller/image.controller";
 import { deleteTagHandler, getAllTagsHandler, getTagHandler, createTagHandler } from "./controller/tag.controller";
-import { validateRequest } from "./middleware";
-import checkJwt from "./middleware/checkJwt";
+import { authenticateUser, validateRequest } from "./middleware";
+import { createUserSchema, createUserSessionSchema } from "./schema/user.schema";
 import { createImageSchema, updateImageSchema, deleteImageSchema } from "./schema/image.schema";
 import { createTagSchema, deleteTagSchema } from "./schema/tag.schema";
 
 export default function (app: Express) {
 
+    // Register user
+    app.post("/api/v1/users", validateRequest(createUserSchema), registerUserHandler);
+
+    // Login
+    app.post(
+        "/api/v1/sessions",
+        validateRequest(createUserSessionSchema),
+        createUserSessionHandler
+    );
+
+    // Logout
+    app.delete("/api/v1/sessions", authenticateUser, invalidateUserSessionHandler);
+
     // save image data
-    
     app.post(
         "/api/v1/images",
-        [validateRequest(createImageSchema)],
+        [authenticateUser, validateRequest(createImageSchema)],
         createImageHandler
     )
 
     // get all images
     app.get(
         "/api/v1/images",
-        
         getAllImagesHandler
     )
 
@@ -29,8 +41,6 @@ export default function (app: Express) {
         "/api/v1/images/:imageId",
         getImageHandler
     )
-
-    // /images?date=startIndex=0&size=20
 
     // get all tags of an image
     app.get(
@@ -41,21 +51,21 @@ export default function (app: Express) {
     // update image
     app.put(
         "/api/v1/images/:imageId",
-        [validateRequest(updateImageSchema)],
+        [authenticateUser, validateRequest(updateImageSchema)],
         updateImageHandler
     )
 
     // delete image
     app.delete(
         "/api/v1/images/:imageId",
-        [validateRequest(deleteImageSchema)],
+        [authenticateUser, validateRequest(deleteImageSchema)],
         deleteImageHandler
     )
 
     // create tag
     app.post(
         "/api/v1/tags",
-        [validateRequest(createTagSchema)],
+        [authenticateUser, validateRequest(createTagSchema)],
         createTagHandler
     )
 
@@ -74,7 +84,7 @@ export default function (app: Express) {
     // delete a tag by ID
     app.delete(
         "/api/v1/tags/:tagId",
-        [validateRequest(deleteTagSchema)],
+        [authenticateUser, validateRequest(deleteTagSchema)],
         deleteTagHandler
     )
 

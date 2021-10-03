@@ -1,7 +1,7 @@
 // provide difference between list of elements A and B
-export function difference(A: any, B: any) {
-    const arrA = Array.isArray(A) ? A.map(x => x.toString()) : [A.toString()];
-    const arrB = Array.isArray(B) ? B.map(x => x.toString()) : [B.toString()];
+export function difference(A: Array<string>, B: Array<string>) {
+    const arrA = A.map(x => x.toString());
+    const arrB = B.map(x => x.toString());
 
     const result = [];
     for (const p of arrA) {

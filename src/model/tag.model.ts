@@ -1,4 +1,4 @@
-import mongoose, { Model, PaginateModel } from "mongoose";
+import mongoose, { PaginateModel } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 
 export interface TagDocument extends mongoose.Document {
@@ -17,7 +17,7 @@ const tagSchema = new mongoose.Schema(
 );
 
 tagSchema.plugin(mongoosePaginate);
-interface Tag<T extends mongoose.Document> extends PaginateModel<T> {};
+type Tag<T extends mongoose.Document> = PaginateModel<T>;
 
 const Tag = mongoose.model("Tag", tagSchema);
 export default Tag;

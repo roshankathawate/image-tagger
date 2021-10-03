@@ -1,4 +1,4 @@
-import { query, Request, Response } from "express";
+import { Request, Response } from "express";
 import { get } from "lodash";
 
 import Tag from "../model/tag.model";
@@ -8,7 +8,7 @@ import { createImage, deleteImage, findAllImages, findImage, findAndUpdate } fro
 import moment from "moment";
 
 
-export async function createImageHandler(req: Request, res: Response) {
+export async function createImageHandler(req: Request, res: Response){
     const image = req.body;
     const newImage = await createImage({ ...image });
     await Tag.updateMany({ '_id': newImage.tags }, { $push: { images: newImage._id } });
@@ -102,7 +102,6 @@ export async function deleteImageHandler(req: Request, res: Response) {
     await deleteImage({ imageId });
     await Tag.updateMany({ '_id': tags }, { $pull: { images: image._id } });
     return res.sendStatus(200);
-
 }
 
 

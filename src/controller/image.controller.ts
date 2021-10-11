@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import { get } from "lodash";
 
-import Tag from "../model/tag.model";
-import { difference } from "../util/util";
-
 import { createImage, deleteImage, findAllImages, findImage, findAndUpdate } from "../service/image.service";
 import moment from "moment";
 
@@ -11,14 +8,13 @@ import moment from "moment";
 export async function createImageHandler(req: Request, res: Response){
     const image = req.body;
     const newImage = await createImage({ ...image });
-    await Tag.updateMany({ '_id': newImage.tags }, { $push: { images: newImage._id } });
     return res.send(newImage);
 }
 
 export async function getImageHandler(req: Request, res: Response) {
     const imageId = get(req, "params.imageId");
-    const imageData = await findImage({ imageId });
-
+    const imageData = await findImage({ id: imageId });
+    
     if (!imageData) {
         return res.sendStatus(404);
     }
@@ -28,7 +24,7 @@ export async function getImageHandler(req: Request, res: Response) {
 
 export async function getImageTagsHandler(req: Request, res: Response) {
     const imageId = get(req, "params.imageId");
-    const imageData = await findImage({ imageId });
+    const imageData = await findImage({ id: imageId });
 
     if (!imageData) {
         return res.sendStatus(404);
@@ -77,16 +73,8 @@ export async function updateImageHandler(req: Request, res: Response) {
     if (!oldImage) {
         return res.sendStatus(404);
     }
-    const oldTags = oldImage.tags;
     const updateImage = await findAndUpdate({ imageId }, update, { new: true });
-    const newTags = updateImage.tags;
-    // take difference of tags from old image and updated image,
-    // it will provide tags that are added or removed from an image.
-    const added = difference(newTags, oldTags);
-    const removed = difference(oldTags, newTags);
-    await Tag.updateMany({ '_id': added }, { $addToSet: { images: updateImage._id } });
-    await Tag.updateMany({ '_id': removed }, { $pull: { images: updateImage._id } });
-
+    
     return res.send(updateImage);
 
 }
@@ -100,7 +88,6 @@ export async function deleteImageHandler(req: Request, res: Response) {
     }
     const tags = image.tags;
     await deleteImage({ imageId });
-    await Tag.updateMany({ '_id': tags }, { $pull: { images: image._id } });
     return res.sendStatus(200);
 }
 

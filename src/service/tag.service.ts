@@ -3,20 +3,23 @@ import {
   FilterQuery,
   UpdateQuery,
   QueryOptions,
+  Mongoose,
 } from "mongoose";
 
 import Tag, { TagDocument } from "../model/tag.model";
+import Image from "../model/image.model";
 
 export async function createTag(input: DocumentDefinition<TagDocument>) {
   const newTag = await Tag.create(input);
   return newTag;
 }
 
-export function findTag(
+export  async function findTag(
   query: FilterQuery<TagDocument>,
-  options: QueryOptions = { lean: true }
+  options: QueryOptions = { lean: false }
 ) {
-  return Tag.findOne(query, {}, options);
+  return await Tag.findById(query.id);
+  
 }
 
 export function findAndUpdate(
@@ -41,5 +44,9 @@ export async function findAllTags(query: FilterQuery<TagDocument>) {
 }
 
 export async function deleteTag(query: FilterQuery<TagDocument>) {
-  return await Tag.deleteOne(query);
+  const result = await Tag.deleteOne(query.id);
+  if(result.deletedCount > 0){
+    await Image.updateMany({ '_id': query.images }, { $pull: { tags: query.id } });
+  }
+  return result;
 }

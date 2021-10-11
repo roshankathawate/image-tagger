@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --config nodemon.json src/server.ts",
-    "test": "mocha -r ts-node/register 'src/test/*.test.ts' --timeout 2000ms --exit",
+    "test": "mocha -r ts-node/register 'src/test/*.test.ts' --timeout 4000ms --exit ",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix"
   },
